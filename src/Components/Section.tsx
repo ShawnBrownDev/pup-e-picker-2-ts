@@ -1,4 +1,6 @@
 import { ReactNode } from "react";
+import { useDogContext } from "../providers/DogProvider";
+import { TPage } from "../types";
 
 export const Section = ({
   label,
@@ -8,6 +10,14 @@ export const Section = ({
   label: string;
   children: ReactNode;
 }) => {
+  const { dogs, currentPage, setActivePage } = useDogContext();
+  const favoriteAmount = dogs.filter((dog) => dog.isFavorite).length;
+  const unfavoritedAmount = dogs.length - favoriteAmount;
+
+  const getIsPageActive = (page: TPage) => {
+    return page === currentPage ? "active" : "";
+  };
+
   return (
     <section id="main-section">
       <div className="container-header">
@@ -15,27 +25,27 @@ export const Section = ({
         <div className="selectors">
           {/* This should display the favorited count */}
           <div
-            className={`selector ${"active"}`}
+            className={`selector ${getIsPageActive("favorite")}`}
             onClick={() => {
-              alert("click favorited");
+              setActivePage("favorite");
             }}
           >
-            favorited ( {0} )
+            favorited ( {favoriteAmount} )
           </div>
 
           {/* This should display the unfavorited count */}
           <div
-            className={`selector ${""}`}
+            className={`selector  ${getIsPageActive("unfavorite")}`}
             onClick={() => {
-              alert("click unfavorited");
+              setActivePage("unfavorite");
             }}
           >
-            unfavorited ( {10} )
+            unfavorited ( {unfavoritedAmount} )
           </div>
           <div
-            className={`selector ${""}`}
+            className={`selector  ${getIsPageActive("form")}`}
             onClick={() => {
-              alert("clicked create dog");
+              setActivePage("form");
             }}
           >
             create dog

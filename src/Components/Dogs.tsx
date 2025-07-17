@@ -1,11 +1,41 @@
-// Right now these dogs are constant, but in reality we should be getting these from our server
-// Todo: Refactor to get rid of props (THERE SHOULD BE NO PROPS DRILLING ON THIS COMPONENT)
-export const Dogs = () =>
-  // no props allowed
-  {
-    return (
-      //  the "<> </>"" are called react fragments, it's like adding all the html inside
-      // without adding an actual html element
-      <>{/* Make all the dog cards show up here */}</>
-    );
-  };
+import { useDogContext } from "../providers/DogProvider";
+import { DogCard } from "./DogCard";
+
+export const Dogs = () => {
+  const { loading, removeDog, toggleDogFavorite, getDogsPage } =
+    useDogContext();
+  const activeDogs = getDogsPage();
+
+  return (
+    <>
+      {activeDogs.map((dog) => {
+        return (
+          <DogCard
+            key={dog.id}
+            dog={dog}
+            onTrashIconClick={() => {
+              removeDog(dog.id).catch(() => {
+                throw new Error(`Error has occurred deleting dog ${dog.id}`);
+              });
+            }}
+            onEmptyHeartClick={() => {
+              toggleDogFavorite(true, dog.id).catch(() => {
+                throw new Error(
+                  `Error has occurred adding dog ${dog.id} to favorites`
+                );
+              });
+            }}
+            onHeartClick={() => {
+              toggleDogFavorite(false, dog.id).catch(() => {
+                throw new Error(
+                  `Error has occurred removing dog ${dog.id} to favorites`
+                );
+              });
+            }}
+            isLoading={loading}
+          />
+        );
+      })}
+    </>
+  );
+};
